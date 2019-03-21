@@ -160,10 +160,11 @@ int main(int argc, char *argv[])
     glClearColor(0.3f, 0.3f, 0.3f, 0.5f);
     glEnable(GL_TEXTURE_2D);
     glLoadIdentity();
-
+    
+    //cudaGLSetGLDevice(0);
     create_buffer(&buffer);
     create_texture(&tex);
-    SAFE( cudaGLRegisterBufferObject(buffer) ); // Tell CUDA about the PBO
+    SAFE( cudaGraphicsGLRegisterBuffer(&cudaResourceBuf, buffer, cudaGraphicsMapFlagsWriteDiscard));
 
     // Now, allocate the CUDA side of the data (in CUDA global memory,
     // in preparation for the textures that will store them...)
@@ -552,11 +553,11 @@ int main(int argc, char *argv[])
     SAFE(cudaFree(cudaTriangles));
     SAFE(cudaFree(cudaTriangleIntersectionData));
     SAFE(cudaFree(cudaVertices));
-    SAFE(cudaGLUnregisterBufferObject(buffer));
+    SAFE(cudaGraphicsUnregisterResource(cudaResourceBuf));
     destroy_texture(&tex);
     destroy_buffer(&buffer);
 
-    cudaThreadExit();
+    cudaDeviceReset();
 
     return 0;
 }

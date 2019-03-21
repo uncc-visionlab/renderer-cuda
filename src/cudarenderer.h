@@ -21,6 +21,9 @@
 #define __CUDA_RENDERER_H__
 
 #include <config.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <cuda_gl_interop.h>
 
 #include "Types.h"
 #include "Keyboard.h"
@@ -92,6 +95,7 @@ DECLARE_DEFINE_GLOBAL(Triangle *, g_triangles, NULL)
 // The OpenGL texture for frame drawing
 DECLARE_DEFINE_GLOBAL(GLuint,buffer,0);
 DECLARE_DEFINE_GLOBAL(GLuint,tex,0);
+DECLARE_DEFINE_GLOBAL(cudaGraphicsResource_t,cudaResourceBuf,NULL);
 
 // The BVH
 DECLARE_DEFINE_GLOBAL(BVHNode*, g_pSceneBVH, NULL);

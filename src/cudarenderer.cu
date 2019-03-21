@@ -879,8 +879,10 @@ void CudaRender(
 
     int *pixels;
     glBindTexture(GL_TEXTURE_2D, tex);
-    SAFE(cudaGLMapBufferObject((void**)&pixels, buffer));
-
+    SAFE(cudaGraphicsMapResources(1,&cudaResourceBuf,0));
+    size_t num_bytes;
+    SAFE(cudaGraphicsResourceGetMappedPointer((void **)&pixels, &num_bytes,
+                                                         cudaResourceBuf));
     if (g_bUsePoints) {
 	cudaMemset(pixels, 0x40, MAXX*MAXY*sizeof(unsigned)); // Clear all pixels to ambient
 	int blocksVertices = (g_verticesNo + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
@@ -981,8 +983,8 @@ void CudaRender(
 	exit(-1);
     }
 
-    SAFE(cudaThreadSynchronize());
-    SAFE(cudaGLUnmapBufferObject(buffer));
+    SAFE(cudaDeviceSynchronize());
+    SAFE(cudaGraphicsUnmapResources(1, &cudaResourceBuf, 0));
 
     // Use OpenGL texture to display the generated frame at lightning speed
     // (the PBO buffer is already on the card, no useless PCI bus criss-cross)
